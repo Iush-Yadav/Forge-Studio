@@ -1,0 +1,204 @@
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; background: #0a0a0a; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: transparent;
+  color: #f0ece4;
+  overflow-x: hidden;
+}
+
+/* ── Custom cursor: ONLY on devices with a fine pointer + hover (desktop). ──
+   Prevents the frozen-dot bug on touch screens and keeps a normal cursor
+   for keyboard/touch users. */
+#cur-dot, #cur-ring { display: none; }
+
+@media (hover: hover) and (pointer: fine) {
+  body.custom-cursor { cursor: none; }
+  body.custom-cursor a,
+  body.custom-cursor button,
+  body.custom-cursor [role="button"],
+  body.custom-cursor input,
+  body.custom-cursor select,
+  body.custom-cursor textarea { cursor: none; }
+  #cur-dot  { display: block; width: 10px; height: 10px; border-radius: 50%; background: #c8ff00; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; mix-blend-mode: difference; }
+  #cur-ring { display: block; width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(200,255,0,0.45); position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; mix-blend-mode: difference; }
+}
+
+/* ── Keyboard focus is always visible ── */
+:focus-visible {
+  outline: 2px solid #c8ff00;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #c8ff00; }
+
+/* ── Film-grain overlay ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9990;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px;
+}
+
+@keyframes ml    { from { transform: translateX(0); }    to { transform: translateX(-50%); } }
+@keyframes mr    { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+@keyframes fl1   { 0%,100% { transform: translateY(0); }                 50% { transform: translateY(-16px); } }
+@keyframes fl2   { 0%,100% { transform: translateY(0) rotate(-2deg); }   50% { transform: translateY(-10px) rotate(2deg); } }
+@keyframes blink { 0%,100% { opacity: 1; }                               50% { opacity: 0; } }
+
+/* ── Nav layout ── */
+.nav-inner { display: flex; align-items: center; justify-content: space-between; height: 76px; max-width: 1440px; margin: 0 auto; padding: 0 clamp(1.5rem, 4vw, 3.5rem); }
+.nav-desktop { display: flex; align-items: center; gap: 36px; }
+.nav-hamburger { display: none; flex-direction: column; gap: 6px; background: none; border: none; cursor: pointer; padding: 8px; }
+.mobile-menu { display: none; flex-direction: column; background: rgba(10,10,10,0.98); backdrop-filter: blur(24px); border-top: 1px solid rgba(240,236,228,0.06); padding: 24px clamp(1.5rem, 4vw, 3.5rem) 32px; }
+.mobile-menu.is-open { display: flex; }
+
+@media (max-width: 900px) {
+  .nav-desktop   { display: none !important; }
+  .nav-hamburger { display: flex !important; }
+}
+
+/* ── Grids ── */
+.two-col   { display: grid; grid-template-columns: 1fr 1fr;      gap: clamp(40px, 6vw, 100px); }
+.three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+.port-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+@media (max-width: 1100px) { .three-col { grid-template-columns: 1fr 1fr; } .port-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 768px)  { .two-col { grid-template-columns: 1fr; gap: 48px; } .three-col, .port-grid { grid-template-columns: 1fr; } }
+
+.svc-row { display: grid; grid-template-columns: 88px 1fr 1fr auto; align-items: center; gap: clamp(18px, 3.5vw, 56px); }
+@media (max-width: 768px) { .svc-row { grid-template-columns: 48px 1fr; } .svc-desc, .svc-arrow { display: none !important; } }
+
+@media (max-width: 640px) {
+  .hero-stats   { flex-direction: column; gap: 24px !important; }
+  .hero-actions { flex-direction: column; gap: 12px !important; }
+  .footer-cols  { flex-direction: column !important; }
+}
+
+/* ── Inputs ── */
+.forge-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(240,236,228,0.15); padding: 16px 0; color: #f0ece4; font-family: 'Barlow', sans-serif; font-weight: 300; font-size: 18px; outline: none; transition: border-color 0.25s; margin-bottom: 36px; }
+.forge-input::placeholder { color: rgba(240,236,228,0.35); }
+.forge-input:focus { border-bottom-color: #c8ff00; }
+select.forge-input { cursor: pointer; appearance: none; -webkit-appearance: none; }
+select.forge-input option { background: #111; }
+
+/* Visually-hidden labels for screen readers */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ── Respect reduced-motion preference ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Custom cursor: ONLY on devices with a fine pointer + hover (desktop). ──
+   Prevents the frozen-dot bug on touch screens and keeps a normal cursor
+   for keyboard/touch users. */
+#cur-dot, #cur-ring { display: none; }
+
+@media (hover: hover) and (pointer: fine) {
+  body.custom-cursor { cursor: none; }
+  body.custom-cursor a,
+  body.custom-cursor button,
+  body.custom-cursor [role="button"],
+  body.custom-cursor input,
+  body.custom-cursor select,
+  body.custom-cursor textarea { cursor: none; }
+  #cur-dot  { display: block; width: 10px; height: 10px; border-radius: 50%; background: #c8ff00; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; mix-blend-mode: difference; }
+  #cur-ring { display: block; width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(200,255,0,0.45); position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; mix-blend-mode: difference; }
+}
+
+/* ── Keyboard focus is always visible ── */
+:focus-visible {
+  outline: 2px solid #c8ff00;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #c8ff00; }
+
+/* ── Film-grain overlay ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9990;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px;
+}
+
+@keyframes ml    { from { transform: translateX(0); }    to { transform: translateX(-50%); } }
+@keyframes mr    { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+@keyframes fl1   { 0%,100% { transform: translateY(0); }                 50% { transform: translateY(-16px); } }
+@keyframes fl2   { 0%,100% { transform: translateY(0) rotate(-2deg); }   50% { transform: translateY(-10px) rotate(2deg); } }
+@keyframes blink { 0%,100% { opacity: 1; }                               50% { opacity: 0; } }
+
+/* ── Nav layout ── */
+.nav-inner { display: flex; align-items: center; justify-content: space-between; height: 76px; max-width: 1440px; margin: 0 auto; padding: 0 clamp(1.5rem, 4vw, 3.5rem); }
+.nav-desktop { display: flex; align-items: center; gap: 36px; }
+.nav-hamburger { display: none; flex-direction: column; gap: 6px; background: none; border: none; cursor: pointer; padding: 8px; }
+.mobile-menu { display: none; flex-direction: column; background: rgba(10,10,10,0.98); backdrop-filter: blur(24px); border-top: 1px solid rgba(240,236,228,0.06); padding: 24px clamp(1.5rem, 4vw, 3.5rem) 32px; }
+.mobile-menu.is-open { display: flex; }
+
+@media (max-width: 900px) {
+  .nav-desktop   { display: none !important; }
+  .nav-hamburger { display: flex !important; }
+}
+
+/* ── Grids ── */
+.two-col   { display: grid; grid-template-columns: 1fr 1fr;      gap: clamp(40px, 6vw, 100px); }
+.three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+.port-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+@media (max-width: 1100px) { .three-col { grid-template-columns: 1fr 1fr; } .port-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 768px)  { .two-col { grid-template-columns: 1fr; gap: 48px; } .three-col, .port-grid { grid-template-columns: 1fr; } }
+
+.svc-row { display: grid; grid-template-columns: 88px 1fr 1fr auto; align-items: center; gap: clamp(18px, 3.5vw, 56px); }
+@media (max-width: 768px) { .svc-row { grid-template-columns: 48px 1fr; } .svc-desc, .svc-arrow { display: none !important; } }
+
+@media (max-width: 640px) {
+  .hero-stats   { flex-direction: column; gap: 24px !important; }
+  .hero-actions { flex-direction: column; gap: 12px !important; }
+  .footer-cols  { flex-direction: column !important; }
+}
+
+/* ── Inputs ── */
+.forge-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(240,236,228,0.15); padding: 16px 0; color: #f0ece4; font-family: 'Barlow', sans-serif; font-weight: 300; font-size: 18px; outline: none; transition: border-color 0.25s; margin-bottom: 36px; }
+.forge-input::placeholder { color: rgba(240,236,228,0.35); }
+.forge-input:focus { border-bottom-color: #c8ff00; }
+select.forge-input { cursor: pointer; appearance: none; -webkit-appearance: none; }
+select.forge-input option { background: #111; }
+
+/* Visually-hidden labels for screen readers */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* ── Respect reduced-motion preference ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
